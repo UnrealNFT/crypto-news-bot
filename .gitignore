@@ -1,0 +1,58 @@
+# ===== Fichiers sensibles - NE JAMAIS COMMITER =====
+config.py
+.env
+.env.local
+*.lock
+note.txt
+prompt.txt
+note.txt
+
+# ===== Données du bot =====
+posted_articles.txt
+posted_titles.txt
+bot_running.lock
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# ===== Virtual Environment =====
+venv/
+.venv/
+ENV/
+env/
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Images générées =====
+generated_images/
+temp_image_*.png
+*.jpg
+*.jpeg
+# Exception : garder le logo
+!Logofr.PNG
+!images/*.png
+
+# ===== Backup =====
+*.bak
+*.backup
