@@ -383,17 +383,19 @@ def translate_with_llama(article, max_retries=3):
     
     for attempt in range(max_retries):
         try:
-            prompt = f"""Traduis cet article crypto en français de manière professionnelle.
+            prompt = f"""Traduis cet article crypto en français. Réponds UNIQUEMENT avec du JSON valide, sans texte explicatif.
 
 Titre: {article['title']}
 Description: {article['description'][:500]}
 
-Réponds au format JSON:
+FORMAT DE RÉPONSE (copie exactement ce format):
 {{
-    "titre_fr": "titre traduit",
-    "description_fr": "description traduite",
-    "resume": "résumé en 2-3 phrases"
-}}"""
+    "titre_fr": "ton titre traduit ici",
+    "description_fr": "ta description traduite ici",
+    "resume": "ton résumé en 2-3 phrases ici"
+}}
+
+Réponds maintenant avec SEULEMENT le JSON:"""
 
             # Appel API Ollama local (port 11434 par défaut)
             response = requests.post(
@@ -412,12 +414,30 @@ Réponds au format JSON:
                 
             content = response.json().get('response', '')
             
-            # Nettoie la réponse JSON si nécessaire
+            # Log la réponse brute pour debug (première tentative seulement)
+            if attempt == 0:
+                logger.info(f"🔍 Réponse Llama brute ({len(content)} chars): {content[:200]}...")
+            
+            # Nettoie et extrait le JSON de la réponse
             content = content.strip()
-            if content.startswith('```json'):
-                content = content[7:-3]
-            elif content.startswith('```'):
-                content = content[3:-3]
+            
+            # Cherche un bloc JSON dans la réponse (supporte texte avant/après)
+            import re
+            json_match = re.search(r'\{[^{}]*"titre_fr"[^{}]*"description_fr"[^{}]*"resume"[^{}]*\}', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(0)
+            else:
+                # Fallback: nettoie les balises markdown
+                if content.startswith('```json'):
+                    content = content[7:]
+                elif content.startswith('```'):
+                    content = content[3:]
+                if content.endswith('```'):
+                    content = content[:-3]
+                content = content.strip()
+            
+            if not content:
+                raise ValueError("Réponse vide de Llama")
                 
             result = json.loads(content)
             
