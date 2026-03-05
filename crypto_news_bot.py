@@ -62,9 +62,11 @@ telegram_bot = Bot(token=TELEGRAM_BOT_TOKEN)
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Stockage persistant des articles déjà postés ET données de déduplication
-POSTED_ARTICLES_FILE = "/opt/crypto-bot/tgbot/posted_articles.txt"
-POSTED_TITLES_FILE = "/opt/crypto-bot/tgbot/posted_titles.txt"
-LOCK_FILE = "/opt/crypto-bot/tgbot/bot_running.lock"
+# Utilise le répertoire du script pour compatibilité Windows/Linux
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+POSTED_ARTICLES_FILE = os.path.join(SCRIPT_DIR, "posted_articles.txt")
+POSTED_TITLES_FILE = os.path.join(SCRIPT_DIR, "posted_titles.txt")
+LOCK_FILE = os.path.join(SCRIPT_DIR, "bot_running.lock")
 
 def check_if_bot_running():
     """Vérifie si le bot est déjà en cours d'exécution (Windows-safe)"""
@@ -507,7 +509,7 @@ async def add_logo_to_image(image_url):
         logger.info(f"🖼️ Image chargée: {img.size} mode: {img.mode}")
         
         # Vérifie si le logo existe (chemin absolu pour serveur)
-        logo_path = "/opt/crypto-bot/tgbot/Logofr.PNG"
+        logo_path = os.path.join(SCRIPT_DIR, "Logofr.PNG")
         logger.info(f"🔍 Recherche logo: {logo_path}")
         
         if os.path.exists(logo_path):
@@ -542,7 +544,7 @@ async def add_logo_to_image(image_url):
                 logger.info("✅ Logo appliqué EN HAUT À GAUCHE sans transparence !")
             
             # Sauvegarde l'image avec logo (chemin absolu pour serveur)
-            output_path = f"/opt/crypto-bot/tgbot/temp_image_{int(time.time())}.png"
+            output_path = os.path.join(SCRIPT_DIR, f"temp_image_{int(time.time())}.png")
             img.save(output_path)
             
             logger.info("✅ Logo superposé sur l'image !")
