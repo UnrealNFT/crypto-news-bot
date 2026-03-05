@@ -49,12 +49,12 @@ NEWS_SOURCES = [
     }
 ]
 
-# Proxies CORS alternatifs (en cas de timeout)
+# Proxies CORS alternatifs (testés et fonctionnels)
 CORS_PROXIES = [
-    "https://api.allorigins.win/raw?url=",
-    "https://corsproxy.io/?url=",
-    "https://cors-anywhere.herokuapp.com/",
-    "https://thingproxy.freeboard.io/fetch/"
+    "https://api.codetabs.com/v1/proxy?quest=",  # Rapide et fiable
+    "https://corsproxy.github.io/?",             # GitHub-hosted, stable
+    "https://proxy.cors.sh/",                     # Service dédié CORS
+    "https://api.allorigins.win/raw?url=",       # Backup
 ]
 
 # Initialisation des clients
