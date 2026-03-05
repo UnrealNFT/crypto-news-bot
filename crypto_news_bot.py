@@ -59,7 +59,8 @@ CORS_PROXIES = [
 
 # Initialisation des clients
 telegram_bot = Bot(token=TELEGRAM_BOT_TOKEN)
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+# OpenAI remplacé par Llama (voir translate_with_llama)
+# openai_client = OpenAI(api_key=OPENAI_API_KEY)  # Plus utilisé
 
 # Stockage persistant des articles déjà postés ET données de déduplication
 # Utilise le répertoire du script pour compatibilité Windows/Linux
@@ -296,13 +297,35 @@ def parse_feed(xml_content, source_name):
             if len(description.strip()) < 20 or "image" in title.lower():
                 continue
             
+            # Extraction de l'image depuis le flux RSS
+            image_url = None
+            # Cherche dans enclosure (tag standard)
+            if hasattr(entry, 'enclosures') and entry.enclosures:
+                for enclosure in entry.enclosures:
+                    enc_type = enclosure.get('type', '') if isinstance(enclosure, dict) else ''
+                    if enc_type.startswith('image/'):
+                        image_url = enclosure.get('href') or enclosure.get('url')
+                        break
+            # Cherche dans media:content
+            if not image_url and hasattr(entry, 'media_content') and entry.media_content:
+                for media in entry.media_content:
+                    media_type = media.get('type', '') if isinstance(media, dict) else ''
+                    if media_type.startswith('image/'):
+                        image_url = media.get('url')
+                        break
+            # Cherche dans media:thumbnail
+            if not image_url and hasattr(entry, 'media_thumbnail') and entry.media_thumbnail:
+                if isinstance(entry.media_thumbnail, list) and len(entry.media_thumbnail) > 0:
+                    image_url = entry.media_thumbnail[0].get('url')
+            
             article = {
                 'title': title,
                 'description': description,
                 'link': getattr(entry, 'link', ''),
                 'pub_date': getattr(entry, 'published', ''),
                 'id': getattr(entry, 'id', '') or getattr(entry, 'link', ''),
-                'source': source_name
+                'source': source_name,
+                'image_url': image_url  # Image depuis RSS
             }
             articles.append(article)
             
@@ -355,41 +378,40 @@ def clean_content(text):
     
     return text.strip()
 
-def translate_with_chatgpt(article, max_retries=3):
-    """Traduit un article en français avec ChatGPT (avec retry)"""
+def translate_with_llama(article, max_retries=3):
+    """Traduit un article en français avec Llama via Ollama (local, gratuit)"""
     
     for attempt in range(max_retries):
         try:
-            prompt = f"""
-Traduis cet article crypto en français de manière professionnelle et engaging. 
-Garde le même style journalistique et les termes techniques appropriés.
+            prompt = f"""Traduis cet article crypto en français de manière professionnelle.
 
 Titre: {article['title']}
-Description: {article['description'][:500]}...
+Description: {article['description'][:500]}
 
 Réponds au format JSON:
 {{
     "titre_fr": "titre traduit",
     "description_fr": "description traduite",
     "resume": "résumé en 2-3 phrases"
-}}
-"""
+}}"""
 
-            response = openai_client.chat.completions.create(
-                model=OPENAI_MODEL,
-                messages=[
-                    {"role": "system", "content": "Tu es un expert traducteur crypto français. Tu traduis les actualités blockchain de manière claire et professionnelle."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=800,
-                temperature=0.7,
+            # Appel API Ollama local (port 11434 par défaut)
+            response = requests.post(
+                'http://localhost:11434/api/generate',
+                json={
+                    "model": "llama3.2",  # ou "mistral", "llama2" selon ce qui est installé
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {"temperature": 0.7}
+                },
+                timeout=30
             )
             
-            # Vérification de sécurité pour éviter les erreurs de type
-            content = response.choices[0].message.content
-            if content is None:
-                raise ValueError("Réponse OpenAI vide")
+            if response.status_code != 200:
+                raise ValueError(f"Ollama API error: {response.status_code}")
                 
+            content = response.json().get('response', '')
+            
             # Nettoie la réponse JSON si nécessaire
             content = content.strip()
             if content.startswith('```json'):
@@ -403,7 +425,7 @@ Réponds au format JSON:
             if not all(key in result for key in ['titre_fr', 'description_fr', 'resume']):
                 raise ValueError("Champs JSON manquants")
                 
-            logger.info(f"✅ Traduction réussie: {article['title'][:50]}...")
+            logger.info(f"✅ Traduction Llama réussie: {article['title'][:50]}...")
             return result
             
         except json.JSONDecodeError as e:
@@ -423,8 +445,12 @@ Réponds au format JSON:
         "resume": "📰 Article crypto important à consulter."
     }
 
+# ========================================================================================
+# NOTE: DALL-E désactivé - Images désormais récupérées depuis flux RSS (voir parse_feed)
+# Cette fonction est conservée pour historique mais n'est plus utilisée
+# ========================================================================================
 async def generate_image_with_dalle(article_title):
-    """Génère une image avec DALL-E pour illustrer l'article (style manga/anime tech)"""
+    """[DÉSACTIVÉ] Génère une image avec DALL-E pour illustrer l'article (style manga/anime tech)"""
     try:
         # EXTRACTION ET NETTOYAGE DES MOTS-CLÉS (SANS DÉCLENCHEURS BITCOIN)
         title_lower = article_title.lower()
@@ -565,15 +591,13 @@ async def upload_temp_image(image_path):
     return None
 
 async def post_to_telegram(article, translation):
-    """Poste l'article traduit sur Telegram avec image générée style manga"""
+    """Poste l'article traduit sur Telegram avec image du flux RSS"""
     try:
         # Sélection d'emojis aléatoires
         emoji = random.choice(CRYPTO_EMOJIS)
         
-        # Génération d'image (optionnel)
-        image_url = None
-        if GENERATE_IMAGES:  # Option configurable
-            image_url = await generate_image_with_dalle(translation['titre_fr'])
+        # Récupération de l'image depuis le flux RSS (au lieu de DALL-E)
+        image_url = article.get('image_url')
         
         # Format du message épuré (sans hashtags)
         message = f"""
@@ -586,27 +610,23 @@ async def post_to_telegram(article, translation):
 🔗 [Sources]({article['link']})
 """
         
-        # Envoi avec image locale (avec logo) ou URL
-        if image_url:
-            if isinstance(image_url, str) and image_url.startswith('tgbot/'):
-                # Image locale avec logo
-                with open(image_url, 'rb') as photo:
-                    await telegram_bot.send_photo(
-                        chat_id=CHAT_ID,
-                        photo=photo,
-                        caption=message,
-                        parse_mode='Markdown'
-                    )
-                # Supprime le fichier temporaire
-                import os
-                os.remove(image_url)
-            else:
-                # Image URL DALL-E originale
+        # Envoi avec image RSS si disponible
+        if image_url and GENERATE_IMAGES:  # GENERATE_IMAGES désormais contrôle l'affichage d'images RSS
+            try:
                 await telegram_bot.send_photo(
                     chat_id=CHAT_ID,
                     photo=image_url,
                     caption=message,
                     parse_mode='Markdown'
+                )
+            except Exception as img_error:
+                logger.warning(f"⚠️ Image RSS non disponible: {img_error}, envoi sans image")
+                # Fallback: envoi sans image
+                await telegram_bot.send_message(
+                    chat_id=CHAT_ID,
+                    text=message,
+                    parse_mode='Markdown',
+                    disable_web_page_preview=False
                 )
         else:
             await telegram_bot.send_message(
@@ -645,8 +665,8 @@ async def process_news():
             
         logger.info(f"🆕 Nouvel article: {article['title'][:50]}...")
         
-        # Traduction avec ChatGPT
-        translation = translate_with_chatgpt(article)
+        # Traduction avec Llama (local, gratuit)
+        translation = translate_with_llama(article)
         
         # Posting sur Telegram
         success = await post_to_telegram(article, translation)
