@@ -404,7 +404,7 @@ Réponds au format JSON:
                     "stream": False,
                     "options": {"temperature": 0.7}
                 },
-                timeout=30
+                timeout=120  # Timeout augmenté pour première exécution (chargement modèle)
             )
             
             if response.status_code != 200:
