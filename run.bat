@@ -14,7 +14,13 @@ echo 🤖 Lancement du bot...
 echo    (Ctrl+C pour arrêter)
 echo.
 
-python crypto_news_bot.py
+if exist ".venv\Scripts\python.exe" (
+    .venv\Scripts\python.exe -m bot.main
+) else (
+    echo ⚠️  Virtual environment not found. Run: uv venv
+    pause
+    exit /b 1
+)
 
 echo.
 echo ✅ Bot arrêté.

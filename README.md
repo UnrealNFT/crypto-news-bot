@@ -1,32 +1,32 @@
-# 🚀 Bot Crypto News FR - Automatic RSS to Telegram
+# Bot Crypto News FR - Automatic RSS to Telegram
 
-Bot Telegram automatique qui récupère les flux RSS des sites crypto, traduit les articles en français avec ChatGPT, génère des images avec DALL-E, et poste automatiquement dans votre canal Telegram.
+Bot Telegram automatique qui recupere les flux RSS des sites crypto, traduit les articles en francais avec ChatGPT, genere des images avec DALL-E, et poste automatiquement dans votre canal Telegram.
 
-## 🎯 Fonctionnement
+## Fonctionnement
 
-Le bot est un **agent Python personnalisé de A à Z** qui :
+Le bot est un **agent Python personnalise de A a Z** qui :
 
-1. 📡 **Interroge les flux RSS** toutes les 5 minutes :
+1. **Interroge les flux RSS** toutes les 5 minutes :
    - CoinTelegraph: `https://cointelegraph.com/rss`
    - CryptoNews: `https://cryptonews.com/news/feed/`
-   - Utilise un **UserAgent** pour éviter les bans IP
+   - Utilise un **UserAgent** pour eviter les bans IP
 
-2. 🔍 **Vérifie les doublons** : 
-   - Compare les titres avec les articles déjà postés
-   - Détection de similarité pour éviter le spam
+2. **Verifie les doublons** : 
+   - Compare les titres avec les articles deja postes
+   - Detection de similarite pour eviter le spam
 
-3. 🤖 **Traduit avec ChatGPT** :
-   - Traduction professionnelle en français
-   - Résumé et formatage optimisé
+3. **Traduit avec ChatGPT** :
+   - Traduction professionnelle en francais
+   - Resume et formatage optimise
 
-4. 🎨 **Génère une image avec OpenAI DALL-E** :
+4. **Genere une image avec OpenAI DALL-E** :
    - Style anime/manga Studio Ghibli
-   - Superpose votre logo sur l'image générée
-   - Alternative : récupère les images originales des articles (marquées source)
+   - Superpose votre logo sur l'image generee
+   - Alternative : recupere les images originales des articles (marquees source)
 
-5. 📤 **Poste sur Telegram** avec formatage professionnel
+5. **Poste sur Telegram** avec formatage professionnel
 
-## ⚡ Installation Rapide
+## Installation Rapide
 
 ### 1. Clone le projet
 ```bash
@@ -39,7 +39,7 @@ cd crypto-news-bot
 # Copier le fichier de configuration exemple
 cp config.py.example config.py
 
-# Éditer avec vos clés API
+# Editer avec vos cles API
 nano config.py  # ou notepad config.py sur Windows
 ```
 
@@ -50,7 +50,7 @@ OPENAI_API_KEY = "votre_cle_openai"        # De platform.openai.com
 CHAT_ID = "@votre_canal"                   # Votre canal Telegram
 ```
 
-### 3. Installation des dépendances
+### 3. Installation des dependances
 ```bash
 # Windows
 install.bat
@@ -68,120 +68,120 @@ run.bat
 python crypto_news_bot.py
 ```
 
-## 🔧 Configuration Avancée
+## Configuration Avancee
 
 ### API Keys
 - **Telegram Bot Token** : Obtenez-le via [@BotFather](https://t.me/BotFather)
-- **OpenAI API Key** : Créez-la sur [platform.openai.com](https://platform.openai.com/api-keys)
+- **OpenAI API Key** : Creez-la sur [platform.openai.com](https://platform.openai.com/api-keys)
 
 ### Trouver votre CHAT_ID
 - **Canal public** : `@nomdevotrecanal`
-- **Groupe privé** : Ajoutez [@userinfobot](https://t.me/userinfobot), il vous donnera l'ID
+- **Groupe prive** : Ajoutez [@userinfobot](https://t.me/userinfobot), il vous donnera l'ID
 - **Via script** : `python find_chat_id.py`
 
-### Paramètres de fréquence
+### Parametres de frequence
 ```python
-POST_INTERVAL_MINUTES = 5   # Intervalle entre chaque vérification (défaut: 5min)
+POST_INTERVAL_MINUTES = 5   # Intervalle entre chaque verification (defaut: 5min)
 MAX_ARTICLES_PER_CYCLE = 5  # Nombre max d'articles par cycle
-DELAY_BETWEEN_POSTS = 5     # Délai entre chaque post (secondes)
+DELAY_BETWEEN_POSTS = 5     # Delai entre chaque post (secondes)
 ```
 
-### Génération d'images
+### Generation d'images
 ```python
 GENERATE_IMAGES = True   # Activer DALL-E
 IMAGE_STYLE = "Beautiful anime manga cartoon illustration in Studio Ghibli style"
 ```
 
-## 📋 Architecture Technique
+## Architecture Technique
 
 ### Backend 100% Python
 - **feedparser** : Lecture des flux RSS
-- **requests** : Requêtes HTTP avec UserAgent personnalisé
+- **requests** : Requetes HTTP avec UserAgent personnalise
 - **python-telegram-bot** : API Telegram Bot
 - **openai** : ChatGPT pour traduction + DALL-E pour images
 - **Pillow (PIL)** : Superposition du logo sur les images
 
-### Flux de données
+### Flux de donnees
 ```
-RSS Feed → Parse → Dedupe Check → Translate (GPT) → Generate Image (DALL-E) 
-→ Overlay Logo → Post to Telegram → Log Posted Article
+RSS Feed -> Parse -> Dedupe Check -> Translate (GPT) -> Generate Image (DALL-E) 
+-> Overlay Logo -> Post to Telegram -> Log Posted Article
 ```
 
-### Éviter les bans IP
+### Eviter les bans IP
 Le bot utilise :
-- **UserAgent** personnalisé pour les requêtes HTTP
+- **UserAgent** personnalise pour les requetes HTTP
 - **Proxies CORS** alternatifs en cas de timeout
-- **Rate limiting** : délai entre les posts
+- **Rate limiting** : delai entre les posts
 - **Politeness** : pas de spam des serveurs RSS
 
 ### Stockage persistant
 ```
-posted_articles.txt   # URLs déjà postées
-posted_titles.txt     # Titres pour déduplication
-bot_running.lock      # Prévention des instances multiples
+posted_articles.txt   # URLs deja postees
+posted_titles.txt     # Titres pour deduplication
+bot_running.lock      # Prevention des instances multiples
 ```
 
-## 🤖 Fonctionnalités Principales
+## Fonctionnalites Principales
 
-✅ **Multi-sources RSS** (CoinTelegraph, CryptoNews, etc.)  
-✅ **Traduction IA** française professionnelle  
-✅ **Génération d'images** DALL-E + logo overlay  
-✅ **Anti-doublons** intelligent  
-✅ **UserAgent** pour éviter les bans  
-✅ **CORS Proxies** alternatifs  
-✅ **Logging** détaillé  
-✅ **Lock file** anti-multi-instances  
-✅ **Planning automatique** avec schedule  
+- **Multi-sources RSS** (CoinTelegraph, CryptoNews, etc.)
+- **Traduction IA** francaise professionnelle
+- **Generation d'images** DALL-E + logo overlay
+- **Anti-doublons** intelligent
+- **UserAgent** pour eviter les bans
+- **CORS Proxies** alternatifs
+- **Logging** detaille
+- **Lock file** anti-multi-instances
+- **Planning automatique** avec schedule
 
-## 📱 Format des Messages
+## Format des Messages
 
 ```
-🚀 [Titre traduit en français]
+[Titre traduit en francais]
 
-📝 Résumé court (2-3 phrases)
+Resume court (2-3 phrases)
 
-💎 Description complète traduite...
+Description complete traduite...
 
-🔗 Lire l'article complet : [URL]
-📅 Date de publication  
-🏷️ #CryptoNews #Bitcoin #Blockchain
+Lire l'article complet : [URL]
+Date de publication  
+#CryptoNews #Bitcoin #Blockchain
 
-────────────────────
-🤖 Traduit par ChatGPT | 📡 Source: [NomDuSite]
+-----------------------
+Traduit par ChatGPT | Source: [NomDuSite]
 ```
 
-## 🛠️ Scripts Utilitaires
+## Scripts Utilitaires
 
 - `install.bat` : Installation automatique Windows
 - `run.bat` : Lancement rapide
 - `find_chat_id.py` : Trouver l'ID de votre canal/groupe
 - `test_bot.py` : Tester la connexion Telegram
 
-## 🐛 Debugging
+## Debugging
 
-### Vérifier les logs
-Le bot affiche en temps réel :
-- ✅ Articles récupérés
-- 🤖 Traductions réussies
-- 🎨 Images générées
-- 📱 Posts Telegram
-- ⚠️ Erreurs éventuelles
+### Verifier les logs
+Le bot affiche en temps reel :
+- Articles recuperes
+- Traductions reussies
+- Images generees
+- Posts Telegram
+- Erreurs eventuelles
 
-### Problèmes courants
+### Problemes courants
 ```bash
 # Erreur "Bot already running"
 rm bot_running.lock  # ou del bot_running.lock sur Windows
 
 # Erreur RSS timeout
-# → Le bot basculera automatiquement sur les proxies CORS alternatifs
+# -> Le bot basculera automatiquement sur les proxies CORS alternatifs
 
 # Erreur Telegram
-# → Vérifiez que le bot est admin du canal avec droits de post
+# -> Verifiez que le bot est admin du canal avec droits de post
 ```
 
-## 🚀 Déploiement
+## Deploiement
 
-### Linux (VPS/Serveur)
+### Linux (VPS/serveur)
 ```bash
 # Installation
 git clone https://github.com/Bulls-Dev/crypto-news-bot.git
@@ -193,7 +193,7 @@ pip install -r requirements.txt
 # Lancement avec screen (persistant)
 screen -S cryptobot
 python crypto_news_bot.py
-# Ctrl+A+D pour détacher
+# Ctrl+A+D pour detacher
 
 # Relancer la session
 screen -r cryptobot
@@ -206,7 +206,7 @@ git clone https://github.com/Bulls-Dev/crypto-news-bot.git
 cd crypto-news-bot
 install.bat
 
-# Modifier config.py avec vos clés
+# Modifier config.py avec vos cles
 
 # Lancement
 run.bat
@@ -222,31 +222,31 @@ COPY . .
 CMD ["python", "crypto_news_bot.py"]
 ```
 
-## 🤝 Contribution
+## Contribution
 
 1. Fork le projet
-2. Créez votre branche (`git checkout -b feature/AmazingFeature`)
+2. Creez votre branche (`git checkout -b feature/AmazingFeature`)
 3. Commit vos changements (`git commit -m 'Add AmazingFeature'`)
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrez une Pull Request
 
-## ⚠️ Sécurité
+## Securite
 
-- **NE JAMAIS** commiter `config.py` avec vos vraies clés
+- **NE JAMAIS** commiter `config.py` avec vos vraies cles
 - Utiliser `config.py.example` comme template
 - Le `.gitignore` exclut automatiquement les fichiers sensibles
-- Régénérez vos tokens si accidentellement exposés
+- Regenererez vos tokens si accidentellement exposes
 
-## 📜 License
+## License
 
-MIT License - Voir [LICENSE](LICENSE) pour plus de détails
+MIT License - Voir [LICENSE](LICENSE) pour plus de details
 
-## 👤 Auteur
+## Auteur
 
 **Testiz** - [@crypto_francophone](https://t.me/crypto_francophone)
 
-Développé avec ❤️ pour la communauté crypto française
+Developpe avec passion pour la communaute crypto francaise
 
 ---
 
-🎯 **Automatisez vos actualités crypto maintenant !** 🚀
+**Automatisez vos actualites crypto maintenant !**
