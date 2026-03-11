@@ -1,5 +1,8 @@
 # 🚀 Guide de Déploiement Rapide
 
+> ⚠️ **DOCUMENTATION OBSOLÈTE** : Ce guide fait référence à l'ancienne version utilisant OpenAI.  
+> Pour la version actuelle avec **Ollama + Llama**, consultez [README.md](README.md) et [OLLAMA_SETUP.md](OLLAMA_SETUP.md)
+
 Ce guide vous permet de déployer le bot crypto en **moins de 5 minutes**.
 
 ## ⚡ Prérequis

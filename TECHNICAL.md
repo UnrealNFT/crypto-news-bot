@@ -1,5 +1,9 @@
 # 📚 Documentation Technique
 
+> ⚠️ **DOCUMENTATION OBSOLÈTE** : Cette documentation technique décrit l'ancienne architecture utilisant OpenAI.  
+> Le bot utilise maintenant **Ollama + Llama** pour la traduction et des **images RSS** au lieu de DALL-E.  
+> Pour l'architecture actuelle, consultez le code source dans [src/](src/) et [bot/main.py](bot/main.py)
+
 ## Architecture du Bot
 
 ### Vue d'ensemble

@@ -68,7 +68,7 @@ python -m bot.main
 | `POST_INTERVAL_MINUTES` | Intervalle entre les posts | 5 |
 | `MAX_ARTICLES_PER_CYCLE` | Articles max par cycle | 5 |
 | `DELAY_BETWEEN_POSTS` | Delai entre posts (secondes) | 5 |
-| `GENERATE_IMAGES` | Activer generation DALL-E | False |
+| `GENERATE_IMAGES` | Afficher images des articles RSS | False |
 | `LOG_LEVEL` | Niveau de log | INFO |
 
 ## Structure du Projet

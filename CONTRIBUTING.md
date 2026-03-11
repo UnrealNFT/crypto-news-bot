@@ -1,5 +1,8 @@
 # 🤝 Guide de Contribution
 
+> ⚠️ **Note** : Ce guide peut contenir des références à l'ancienne version utilisant OpenAI.  
+> Le bot utilise maintenant **Ollama + Llama** (local, gratuit). Consultez [OLLAMA_SETUP.md](OLLAMA_SETUP.md) pour la configuration actuelle.
+
 Merci de votre intérêt pour contribuer au Bot Crypto News FR ! Ce guide vous aidera à démarrer.
 
 ## 🚀 Comment Contribuer

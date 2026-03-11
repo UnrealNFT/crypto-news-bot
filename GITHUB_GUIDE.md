@@ -1,5 +1,8 @@
 # 📤 Comment Partager ce Projet sur GitHub
 
+> ⚠️ **Note** : Ce guide peut contenir des références à l'ancienne version utilisant OpenAI.  
+> Le bot utilise maintenant **Ollama + Llama** (pas de clé API externe nécessaire). Voir [README.md](README.md) pour la config actuelle.
+
 ## ⚠️ IMPORTANT - SÉCURITÉ AVANT TOUT
 
 Votre projet contient actuellement des **clés API sensibles** dans `config.py`. 

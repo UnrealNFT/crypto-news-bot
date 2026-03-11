@@ -1,5 +1,8 @@
 # 🎉 Votre Projet est Prêt pour GitHub !
 
+> ⚠️ **DOCUMENTATION HISTORIQUE** : Ce document décrit l'ancienne version utilisant OpenAI.  
+> Pour la version actuelle utilisant **Ollama + Llama**, consultez [README.md](README.md) et [OLLAMA_SETUP.md](OLLAMA_SETUP.md)
+
 ## ✅ Ce que j'ai fait pour vous
 
 J'ai complètement préparé votre projet `tgbot` pour être partagé en toute sécurité avec [@0x Block"s](https://github.com/Bulls-Dev) sur GitHub.
