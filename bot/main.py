@@ -16,12 +16,22 @@ from src.config import (
     LOG_LEVEL,
     CRYPTO_EMOJIS,
 )
+
+# Try to import new config variables (backwards compatibility)
+try:
+    from src.config import ADD_LOGO, LOGO_POSITION, LOGO_SIZE
+except ImportError:
+    ADD_LOGO = True
+    LOGO_POSITION = "top-left"
+    LOGO_SIZE = 200
+
 from src.utils.logger import setup_logger
 from src.utils.storage import Storage
 from src.rss import fetch_news
 from src.deduplication import deduplicate_articles
 from src.translation import translate_with_llama
 from src.telegram import TelegramClient, post_article
+from src.images import generate_crypto_image, add_logo_overlay
 
 
 logger = setup_logger(__name__, LOG_LEVEL)
@@ -116,7 +126,28 @@ async def process_news(client: TelegramClient):
 
         logger.info(f"New article: {article['title'][:50]}...")
 
+        # Translate article
         translation = translate_with_llama(article, logger=logger)
+
+        # Generate image with FLUX.1 if enabled
+        generated_image_path = None
+        if GENERATE_IMAGES:
+            logger.info("🎨 Generating image with FLUX.1...")
+            generated_image_path = generate_crypto_image(article, logger=logger)
+            
+            # Add logo overlay if enabled
+            if generated_image_path and ADD_LOGO:
+                logger.info("🖼️  Adding logo overlay...")
+                generated_image_path = add_logo_overlay(
+                    generated_image_path,
+                    position=LOGO_POSITION,
+                    logo_size=LOGO_SIZE,
+                    logger=logger
+                )
+            
+            # Update article with generated image
+            if generated_image_path:
+                article["generated_image"] = generated_image_path
 
         success = await post_article(
             client,

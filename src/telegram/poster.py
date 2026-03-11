@@ -14,7 +14,10 @@ async def post_article(
     """Post translated article to Telegram."""
     try:
         emoji = random.choice(emojis)
-        image_url = article.get("image_url")
+        
+        # Priority: generated image > RSS image
+        image_path = article.get("generated_image")  # FLUX.1 generated image
+        image_url = article.get("image_url")  # RSS image fallback
 
         message = f"""
 {emoji} **{translation["titre_fr"]}**
@@ -26,7 +29,39 @@ async def post_article(
 [Sources]({article["link"]})
 """
 
-        if image_url and generate_images:
+        # Use generated image if available, otherwise RSS image
+        if image_path and generate_images:
+            try:
+                # Send local generated image file
+                with open(image_path, 'rb') as photo:
+                    await client.send_photo(
+                        chat_id=chat_id,
+                        photo=photo,
+                        caption=message,
+                        parse_mode="Markdown",
+                    )
+                if logger:
+                    logger.info(f"✅ Posted with FLUX.1 generated image")
+            except Exception as img_error:
+                if logger:
+                    logger.warning(f"⚠️  Generated image error: {img_error}, trying RSS fallback")
+                # Fallback to RSS image
+                if image_url:
+                    await client.send_photo(
+                        chat_id=chat_id,
+                        photo=image_url,
+                        caption=message,
+                        parse_mode="Markdown",
+                    )
+                else:
+                    await client.send_message(
+                        chat_id=chat_id,
+                        text=message,
+                        parse_mode="Markdown",
+                        disable_web_page_preview=False,
+                    )
+        elif image_url and generate_images:
+            # Use RSS image if no generated image
             try:
                 await client.send_photo(
                     chat_id=chat_id,

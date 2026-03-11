@@ -2,12 +2,15 @@
 
 Bot Telegram automatique qui recupere les flux RSS crypto, traduit avec Llama (Ollama), et poste sur votre canal.
 
+**Nouveauté** : Génération d'images avec **FLUX.1** (style anime/manga) + logo overlay ! Voir [FLUX_SETUP.md](FLUX_SETUP.md)
+
 ## Fonctionnement
 
 1. **Recupere les flux RSS** toutes les X minutes (CoinTelegraph, CoinDesk, CryptoNews)
 2. **Deduplique** les articles deja postes
 3. **Traduit** en francais avec Llama (local)
-4. **Poste** sur Telegram avec image de l'article
+4. **Génère image** avec FLUX.1 + logo (optionnel, ~10 min/image sur CPU)
+5. **Poste** sur Telegram avec image générée
 
 ## Installation
 
@@ -68,7 +71,10 @@ python -m bot.main
 | `POST_INTERVAL_MINUTES` | Intervalle entre les posts | 5 |
 | `MAX_ARTICLES_PER_CYCLE` | Articles max par cycle | 5 |
 | `DELAY_BETWEEN_POSTS` | Delai entre posts (secondes) | 5 |
-| `GENERATE_IMAGES` | Afficher images des articles RSS | False |
+| `GENERATE_IMAGES` | Generer images avec FLUX.1 (CPU, lent) | False |
+| `ADD_LOGO` | Ajouter logo sur images generees | True |
+| `LOGO_POSITION` | Position du logo (top-left/right, bottom-left/right) | top-left |
+| `LOGO_SIZE` | Taille du logo en pixels | 200 |
 | `LOG_LEVEL` | Niveau de log | INFO |
 
 ## Structure du Projet

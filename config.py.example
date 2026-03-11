@@ -19,7 +19,16 @@ POST_INTERVAL_MINUTES = 5
 # ===== FONCTIONNALITES =====
 MAX_ARTICLES_PER_CYCLE = 5
 DELAY_BETWEEN_POSTS = 5
+
+# ===== GENERATION D'IMAGES FLUX.1 =====
+# Active la generation d'images avec FLUX.1 (CPU, lent mais gratuit)
 GENERATE_IMAGES = False
+# Active la superposition du logo sur les images generees
+ADD_LOGO = True
+# Position du logo: "top-left", "top-right", "bottom-left", "bottom-right"
+LOGO_POSITION = "top-left"
+# Taille du logo en pixels
+LOGO_SIZE = 200
 
 # ===== LOGGING =====
 LOG_LEVEL = "INFO"
